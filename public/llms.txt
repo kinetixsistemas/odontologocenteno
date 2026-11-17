@@ -1,0 +1,31 @@
+# Od. Albany Centeno - Odontología en Punto Fijo, Falcón
+
+> Sitio profesional de la Od. Albany Centeno (Centro Medico Luna Design) en Punto Fijo, Estado Falcón, Venezuela. Información de servicios odontológicos y contacto para agendar citas.
+
+## Información clave
+- Doctora: Od. Albany Centeno
+- Consultorio: Centro Medico Luna Design
+- Dirección: Calle Girardot con esquina de la Calle Nazaret (N° 25-262), Punto Fijo, Estado Falcón, Venezuela
+- Teléfono/WhatsApp: +58 412-6400748
+- Horario: Lunes a viernes ([PENDIENTE: horario específico])
+- Dominio: https://odalbanycenteno.com
+
+## Páginas principales
+- Inicio: https://odalbanycenteno.com/
+- Servicios: https://odalbanycenteno.com/servicios/
+- Limpieza dental: https://odalbanycenteno.com/servicios/limpieza-dental/
+- Extracción dental: https://odalbanycenteno.com/servicios/extraccion-dental/
+- Ortodoncia: https://odalbanycenteno.com/servicios/ortodoncia/
+- Sobre mí: https://odalbanycenteno.com/sobre-mi/
+- Agendar cita: https://odalbanycenteno.com/agendar-cita/
+- Blog: https://odalbanycenteno.com/blog/
+
+## Artículos del blog
+- ¿Cada cuánto debo realizarme una limpieza dental?: https://odalbanycenteno.com/blog/cada-cuanto-limpieza-dental/
+- ¿Cuánto dura un tratamiento de ortodoncia?: https://odalbanycenteno.com/blog/cuanto-dura-ortodoncia/
+- ¿Qué es el diseño de sonrisa?: https://odalbanycenteno.com/blog/que-es-diseno-de-sonrisa/
+- ¿Cuándo debo llevar a mi hijo al odontólogo?: https://odalbanycenteno.com/blog/cuando-llevar-nino-odontologo/
+- ¿Cómo elegir una odontóloga en Punto Fijo?: https://odalbanycenteno.com/blog/como-elegir-odontologa-punto-fijo/
+
+## Nota
+Contenido informativo; el diagnóstico y el plan de tratamiento los define la doctora en consulta. Impacto de llms.txt en motores de IA aún no está garantizado (archivo opcional, bajo costo).

@@ -1,0 +1,132 @@
+---
+import { SITE } from '@/config/site';
+
+export function getOrganizationSchema() {
+  const base = SITE.domain;
+  const dentistId = `${base}/#dentist`;
+  const doctorId = `${base}/#doctor`;
+  const isPending = (value: unknown) => typeof value === 'string' && value.includes('PENDIENTE');
+  const hasGeo = !isPending(SITE.geo.latitude) && !isPending(SITE.geo.longitude);
+  const hours = SITE.hours.openingHoursSpecification.filter(
+    (h) => !isPending(h.opens) && !isPending(h.closes)
+  );
+  const areaServed = SITE.areaServed.map((name) => {
+    if (name === 'Venezuela') return { '@type': 'Country', name };
+    if (name.includes('Falcón')) return { '@type': 'AdministrativeArea', name };
+    return { '@type': 'City', name };
+  });
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': ['Dentist', 'LocalBusiness'],
+    '@id': dentistId,
+    name: SITE.clinicName,
+    description: SITE.description,
+    url: base,
+    telephone: SITE.phone.e164,
+    image: new URL('/og-default.png', base).href,
+    logo: new URL('/images/logo-principal.png', base).href,
+    slogan: 'Tu sonrisa, nuestra pasión.',
+    hasMap: SITE.geo.mapsUrl,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: SITE.address.street,
+      addressLocality: SITE.address.city,
+      addressRegion: SITE.address.region,
+      addressCountry: SITE.address.countryCode,
+    },
+    ...(hasGeo
+      ? {
+          geo: {
+            '@type': 'GeoCoordinates',
+            latitude: SITE.geo.latitude,
+            longitude: SITE.geo.longitude,
+          },
+        }
+      : {}),
+    ...(hours.length > 0 ? { openingHoursSpecification: hours } : {}),
+    areaServed,
+    sameAs: Object.values(SITE.socials).filter((v) => v && v.startsWith('http')),
+    medicalSpecialty: 'Dentistry',
+    knowsLanguage: ['es'],
+    employee: { '@id': doctorId },
+    contactPoint: {
+      '@type': 'ContactPoint',
+      telephone: SITE.phone.e164,
+      contactType: 'customer service',
+      availableLanguage: ['es'],
+    },
+  };
+}
+
+export function getDoctorSchema() {
+  const base = SITE.domain;
+  const doctorId = `${base}/#doctor`;
+  const dentistId = `${base}/#dentist`;
+  const isPending = (value: unknown) => typeof value === 'string' && value.includes('PENDIENTE');
+  const education = SITE.credentials.education.filter((e) => !isPending(e));
+  const license = isPending(SITE.credentials.license) ? null : SITE.credentials.license;
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': ['Person', 'Physician'],
+    '@id': doctorId,
+    name: SITE.doctorName,
+    jobTitle: SITE.specialty,
+    medicalSpecialty: 'Dentistry',
+    worksFor: { '@id': dentistId },
+    knowsAbout: ['Odontología general', 'Limpieza dental', 'Ortodoncia', 'Extracción dental', 'Salud bucal'],
+    knowsLanguage: ['es'],
+    telephone: SITE.phone.e164,
+    sameAs: [SITE.socials.instagram].filter((v) => v && v.startsWith('http')),
+    ...(education.length > 0 ? { alumniOf: education[0] } : {}),
+    ...(license
+      ? { identifier: { '@type': 'PropertyValue', name: 'Registro profesional', value: license } }
+      : {}),
+  };
+}
+
+export function getWebSiteSchema() {
+  const base = SITE.domain;
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${base}/#website`,
+    url: base,
+    name: `${SITE.doctorName} — ${SITE.clinicName}`,
+    description: SITE.description,
+    inLanguage: 'es',
+    publisher: { '@id': `${base}/#dentist` },
+  };
+}
+
+export function getWebPageSchema({
+  url,
+  title,
+  description,
+  image,
+}: {
+  url: string;
+  title: string;
+  description: string;
+  image?: string;
+}) {
+  const base = SITE.domain;
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': `${url}#webpage`,
+    url,
+    name: title,
+    description,
+    inLanguage: 'es',
+    isPartOf: { '@id': `${base}/#website` },
+    about: { '@id': `${base}/#dentist` },
+    dateModified: SITE.lastReviewed,
+    ...(image
+      ? { primaryImageOfPage: { '@type': 'ImageObject', url: new URL(image, base).href } }
+      : {}),
+  };
+}
+---
+<div hidden aria-hidden="true"></div>

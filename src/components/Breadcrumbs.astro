@@ -1,0 +1,28 @@
+---
+import { SITE } from '@/config/site';
+interface Crumb { name: string; href: string }
+interface Props { items: Crumb[] }
+const { items } = Astro.props;
+const all = [{ name: 'Inicio', href: '/' }, ...items];
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: all.map((item, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: item.name,
+    item: new URL(item.href, SITE.domain).href,
+  })),
+};
+---
+<nav aria-label="Migas de pan" class="container-site py-4 text-sm text-secondary/80">
+  <ol class="flex flex-wrap items-center gap-2">
+    {all.map((item, i) => (
+      <li class="flex items-center gap-2">
+        {i < all.length - 1 ? <a href={item.href} class="hover:underline">{item.name}</a> : <span aria-current="page" class="font-medium text-secondary">{item.name}</span>}
+        {i < all.length - 1 && <span aria-hidden="true">/</span>}
+      </li>
+    ))}
+  </ol>
+</nav>
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />

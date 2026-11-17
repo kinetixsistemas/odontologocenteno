@@ -1,0 +1,40 @@
+---
+import { SITE, NAV } from '@/config/site';
+---
+<footer class="mt-16 bg-secondary text-white">
+  <div class="container-site grid gap-10 py-12 md:grid-cols-3">
+    <div>
+      <div class="flex items-center gap-3">
+        <img src="/images/logo-fondo-negro.png" alt="" width="40" height="40" class="h-10 w-10 object-contain" loading="lazy" />
+        <p class="font-heading text-xl">{SITE.doctorName}</p>
+      </div>
+      <p class="mt-2 text-sm text-white/80">{SITE.specialty}</p>
+      <p class="mt-4 text-sm text-white/80">{SITE.clinicName}</p>
+      <p class="mt-1 text-sm text-white/80">{SITE.address.full}</p>
+      <p class="mt-1 text-sm text-white/80">Horario: {SITE.hours.label} · {SITE.hours.detail}</p>
+      <p class="mt-1 text-sm"><a href={SITE.phone.tel} class="underline decoration-white/40 underline-offset-2">{SITE.phone.display}</a></p>
+    </div>
+    <div>
+      <p class="font-heading text-lg">Navegación</p>
+      <ul class="mt-3 space-y-2 text-sm text-white/85">
+        {NAV.map((i) => <li><a href={i.href} class="hover:text-white hover:underline">{i.label}</a></li>)}
+      </ul>
+    </div>
+    <div>
+      <p class="font-heading text-lg">Contacto</p>
+      <ul class="mt-3 space-y-2 text-sm text-white/85">
+        {SITE.socials.instagram && <li><a href={SITE.socials.instagram} target="_blank" rel="noopener noreferrer">Instagram</a></li>}
+        {SITE.socials.facebook && SITE.socials.facebook.startsWith('http') && <li><a href={SITE.socials.facebook} target="_blank" rel="noopener noreferrer">Facebook</a></li>}
+        {SITE.phone.whatsapp && <li><a href={SITE.phone.whatsapp} target="_blank" rel="noopener noreferrer">WhatsApp</a></li>}
+        {SITE.socials.googleReview && SITE.socials.googleReview.startsWith('http') && <li><a href={SITE.socials.googleReview} target="_blank" rel="noopener noreferrer">Déjanos tu reseña en Google</a></li>}
+        {SITE.socials.googleReview && !SITE.socials.googleReview.startsWith('http') && <li><span class="text-white/60">Déjanos tu reseña en Google: {SITE.socials.googleReview}</span></li>}
+      </ul>
+    </div>
+  </div>
+  <div class="border-t border-white/15">
+    <div class="container-site flex flex-col gap-2 py-4 text-center text-xs text-white/70 sm:flex-row sm:justify-between sm:text-left">
+      <p>© {new Date().getFullYear()} {SITE.doctorName}. Tu sonrisa, nuestra pasión.</p>
+      <p>Punto Fijo, Estado Falcón, Venezuela</p>
+    </div>
+  </div>
+</footer>

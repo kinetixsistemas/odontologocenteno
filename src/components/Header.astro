@@ -1,0 +1,44 @@
+---
+import { NAV, SITE } from '@/config/site';
+const path = Astro.url.pathname;
+---
+<header class="sticky top-0 z-40 border-b border-border/60 bg-background/90 backdrop-blur">
+  <div class="container-site flex items-center justify-between gap-4 py-3">
+    <a href="/" class="flex items-center gap-3" aria-label={`${SITE.doctorName} - Inicio`}>
+      <img src="/images/logo-principal.png" alt={`Logo ${SITE.doctorName}`} width="44" height="44" class="h-11 w-11 object-contain" loading="eager" />
+      <div class="leading-tight">
+        <p class="font-heading text-lg text-secondary">{SITE.doctorName}</p>
+        <p class="text-xs text-secondary/80">{SITE.specialty}</p>
+      </div>
+    </a>
+    <nav class="hidden items-center gap-6 md:flex" aria-label="Principal">
+      {NAV.map((item) => (
+        <a href={item.href} class={`text-sm font-medium transition hover:text-secondary ${path === item.href ? 'text-secondary underline decoration-primary underline-offset-4' : 'text-secondary/80'}`}>{item.label}</a>
+      ))}
+    </nav>
+    <div class="flex items-center gap-3">
+      <a href="/agendar-cita/" class="btn-primary hidden sm:inline-flex" data-track="cta_header_agendar">
+        <span aria-hidden="true">📅</span> Agendar Cita
+      </a>
+      <button id="menu-btn" class="inline-flex items-center rounded-full border border-border p-2 text-secondary md:hidden" aria-expanded="false" aria-controls="mobile-menu" aria-label="Abrir menú">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+  </div>
+  <div id="mobile-menu" class="hidden border-t border-border bg-surface md:hidden">
+    <nav class="container-site flex flex-col py-3" aria-label="Móvil">
+      {NAV.map((item) => (
+        <a href={item.href} class="rounded-lg px-3 py-3 text-secondary hover:bg-background">{item.label}</a>
+      ))}
+      <a href="/agendar-cita/" class="btn-primary mt-2 w-full">Agendar Cita</a>
+    </nav>
+  </div>
+</header>
+<script>
+  const btn = document.getElementById('menu-btn');
+  const menu = document.getElementById('mobile-menu');
+  btn?.addEventListener('click', () => {
+    const open = menu?.classList.toggle('hidden') === false;
+    btn.setAttribute('aria-expanded', String(open));
+  });
+</script>

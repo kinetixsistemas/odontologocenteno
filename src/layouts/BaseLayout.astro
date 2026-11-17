@@ -1,0 +1,121 @@
+---
+import '../styles/global.css';
+import { SITE } from '@/config/site';
+import { getWebPageSchema, getWebSiteSchema } from '@/components/SchemaOrg.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import WhatsAppFloat from '@/components/WhatsAppFloat.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  canonical?: string;
+  image?: string;
+  type?: string;
+  noindex?: boolean;
+  schema?: object | object[];
+}
+
+const {
+  title,
+  description = SITE.description,
+  canonical = Astro.url.href,
+  image = '/og-default.png',
+  type = 'website',
+  noindex = false,
+  schema,
+} = Astro.props;
+
+const fullTitle = title.includes(SITE.doctorName) ? title : `${title} | ${SITE.doctorName}`;
+const ogImage = new URL(image, SITE.domain).href;
+const pageSchemas = schema ? (Array.isArray(schema) ? schema : [schema]) : [];
+const schemas = [
+  getWebSiteSchema(),
+  getWebPageSchema({ url: canonical, title: fullTitle, description, image }),
+  ...pageSchemas,
+];
+---
+<!doctype html>
+<html lang={SITE.language}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
+    <meta name="theme-color" content="#F8E7FD" />
+    <meta name="geo.region" content="VE-I" />
+    <meta name="geo.placename" content={SITE.geo.placename} />
+    {SITE.analytics.googleSiteVerification && (
+      <meta name="google-site-verification" content={SITE.analytics.googleSiteVerification} />
+    )}
+
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="es" href={canonical} />
+    <link rel="alternate" hreflang="x-default" href={canonical} />
+    <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&family=Bodoni+Moda:opsz,wght@6..96,400;6..96,600&display=swap" rel="stylesheet" />
+    <title>{fullTitle}</title>
+
+    <meta property="og:type" content={type} />
+    <meta property="og:locale" content={SITE.locale} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:alt" content={fullTitle} />
+    <meta property="og:site_name" content={SITE.clinicName} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={fullTitle} />
+
+    {schemas.map((s) => (
+      <script type="application/ld+json" set:html={JSON.stringify(s)} />
+    ))}
+
+    {SITE.analytics.ga4Id && (
+      <>
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${SITE.analytics.ga4Id}`}></script>
+        <script is:inline define:vars={{ id: SITE.analytics.ga4Id }}>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', id);
+          window.trackEvent = (name, params={}) => { if(window.gtag) window.gtag('event', name, params); };
+        </script>
+      </>
+    )}
+  </head>
+  <body>
+    <a href="#contenido" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded bg-secondary focus:px-4 focus:py-2 focus:text-white">Saltar al contenido</a>
+    <Header />
+    <main id="contenido">
+      <slot />
+    </main>
+    <Footer />
+    <WhatsAppFloat />
+
+    <script>
+      document.addEventListener('click', (event) => {
+        const anchor = (event.target as HTMLElement | null)?.closest('a');
+        if (!anchor) return;
+        const href = anchor.getAttribute('href') || '';
+        const page = window.location.pathname;
+        const track = (name: string) => window.trackEvent?.(name, { page });
+        if (anchor.dataset.track) track(anchor.dataset.track);
+        else if (href.startsWith('tel:')) track('click_call');
+        else if (href.includes('wa.me') || href.startsWith('whatsapp:')) track('click_whatsapp');
+        else if (href.includes('/agendar-cita/')) track('click_agendar');
+        else if (href.includes('maps.app.goo.gl') || href.includes('google.com/maps')) track('click_maps');
+      });
+    </script>
+  </body>
+</html>

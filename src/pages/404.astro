@@ -1,0 +1,17 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { SITE } from '@/config/site';
+---
+<BaseLayout title="Página no encontrada" description="La página que buscas no está disponible." noindex={true}>
+  <section class="container-site py-20 text-center">
+    <p class="eyebrow">ERROR 404</p>
+    <h1 class="mt-2 text-4xl md:text-5xl">Página no encontrada</h1>
+    <p class="mx-auto mt-4 max-w-xl text-secondary/90">Lo sentimos, no pudimos encontrar la página solicitada. Puedes volver al inicio o ir a una sección útil.</p>
+    <div class="mt-8 flex flex-wrap justify-center gap-4">
+      <a href="/" class="btn-primary">Ir al inicio</a>
+      <a href="/servicios/" class="btn-outline">Servicios</a>
+      <a href="/agendar-cita/" class="btn-outline">Agendar cita</a>
+    </div>
+    <p class="mt-8 text-sm text-secondary/80">Contacto: <a class="underline" href={SITE.phone.tel}>{SITE.phone.display}</a> · {SITE.address.city}, {SITE.address.region}</p>
+  </section>
+</BaseLayout>

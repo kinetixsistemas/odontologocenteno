@@ -1,0 +1,28 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import { SITE } from '@/config/site';
+
+const posts = (await getCollection('blog')).sort((a, b) => b.data.pubDate.localeCompare(a.data.pubDate));
+---
+<BaseLayout title="Blog odontológico en Punto Fijo" description="Consejos de salud bucal, prevención y respuestas a preguntas frecuentes de la Od. Albany Centeno en Punto Fijo, Estado Falcón." image="/og/blog.png">
+  <Breadcrumbs items={[{ name: 'Blog', href: '/blog/' }]} />
+  <section class="container-site py-10">
+    <p class="eyebrow">BLOG ODONTOLÓGICO</p>
+    <h1 class="mt-2 text-4xl md:text-5xl">Consejos para una sonrisa sana en Falcón</h1>
+    <p class="mt-4 max-w-3xl text-lg text-secondary/90">Este espacio responde preguntas que los pacientes buscan sobre salud bucal, prevención y tratamientos en Punto Fijo y el Estado Falcón. El contenido es informativo, revisado y no reemplaza una consulta odontológica con la {SITE.doctorName}.</p>
+  </section>
+  <section class="container-site grid gap-6 pb-16 md:grid-cols-2" aria-label="Artículos del blog">
+    {posts.map((post) => (
+      <article class="card flex flex-col p-6">
+        <p class="text-xs uppercase tracking-wide text-secondary/70">{post.data.tags?.[0] || 'Salud bucal'}</p>
+        <h2 class="mt-2 font-body text-xl font-semibold"><a href={`/blog/${post.id}/`} class="hover:underline">{post.data.title}</a></h2>
+        <p class="mt-2 flex-1 text-secondary/85">{post.data.description}</p>
+        <p class="mt-4 text-sm text-secondary/70">Última revisión: {post.data.lastReviewed}</p>
+        <a href={`/blog/${post.id}/`} class="btn-outline mt-4 self-start">Leer artículo</a>
+      </article>
+    ))}
+  </section>
+  <p class="container-site pb-12 text-sm text-secondary/70">{SITE.medicalDisclaimer} Última revisión: {SITE.lastReviewed}.</p>
+</BaseLayout>

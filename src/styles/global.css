@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Prestigious';
+  src: url('/fonts/Prestigious-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-secondary font-body antialiased;
+  }
+  h1, h2, h3, h4 {
+    @apply font-heading text-secondary;
+  }
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+    @apply outline-2 outline-offset-2 outline-secondary;
+  }
+}
+
+@layer components {
+  .container-site {
+    @apply mx-auto w-full max-w-content px-4 sm:px-6 lg:px-8;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-secondary px-6 py-3 font-medium text-white transition hover:brightness-110;
+  }
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-secondary px-6 py-3 font-medium text-secondary transition hover:bg-secondary hover:text-white;
+  }
+  .card {
+    @apply rounded-card bg-surface shadow-subtle border border-border;
+  }
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.2em] text-secondary/80;
+  }
+  .content h2 {
+    @apply mt-8 font-heading text-3xl text-secondary;
+  }
+  .content h3 {
+    @apply mt-6 font-body text-xl font-semibold text-secondary;
+  }
+  .content p {
+    @apply mt-3 leading-relaxed text-secondary/90;
+  }
+  .content ul {
+    @apply mt-3 list-disc space-y-1 pl-6 text-secondary/90;
+  }
+  .content a {
+    @apply underline decoration-primary underline-offset-2;
+  }
+}

@@ -1,0 +1,125 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import FAQ from '@/components/FAQ.astro';
+import { SITE } from '@/config/site';
+import { getOrganizationSchema, getDoctorSchema } from '@/components/SchemaOrg.astro';
+
+const faqs = [
+  { question: '¿Qué servicios odontológicos ofrece la Od. Albany Centeno en Punto Fijo?', answer: 'En Centro Medico Luna Design, la Od. Albany Centeno ofrece limpieza dental, extracción dental y ortodoncia para pacientes en Punto Fijo, Estado Falcón. La evaluación y el plan se definen en consulta.' },
+  { question: '¿Cómo puedo agendar una cita odontológica en Falcón?', answer: 'Puedes solicitar tu cita desde la página de Agendar Cita o escribir por WhatsApp al +58 412-6400748 indicando el tratamiento de interés y tu horario preferido.' },
+  { question: '¿Dónde atiende la odontóloga Albany Centeno?', answer: 'Atiende en Centro Medico Luna Design, Calle Girardot con esquina de la Calle Nazaret (N° 25-262), Punto Fijo, Estado Falcón, Venezuela.' },
+  { question: '¿Cómo elegir una odontóloga en Punto Fijo?', answer: 'Verifica su formación y registro profesional, conoce su experiencia, evalúa la claridad con la que explica el diagnóstico y confirma una ubicación accesible. La primera consulta permite resolver dudas antes de iniciar un tratamiento.' },
+  { question: '¿La información del sitio reemplaza una consulta?', answer: 'No. El contenido es informativo y no reemplaza una consulta odontológica. El diagnóstico y el plan de tratamiento los define la doctora en consulta.' },
+];
+
+const schema = [
+  getOrganizationSchema(),
+  getDoctorSchema(),
+  { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faqs.map(f => ({ '@type': 'Question', name: f.question, acceptedAnswer: { '@type': 'Answer', text: f.answer } })) },
+];
+
+const benefits = [
+  {
+    name: 'Limpieza dental',
+    slug: 'limpieza-dental',
+    items: ['Remoción de placa y sarro', 'Revisión de dientes y encías', 'Orientación de higiene en casa'],
+  },
+  {
+    name: 'Extracción dental',
+    slug: 'extraccion-dental',
+    items: ['Evaluación previa de la pieza', 'Indicaciones de cuidado posterior', 'Seguimiento según el caso'],
+  },
+  {
+    name: 'Ortodoncia',
+    slug: 'ortodoncia',
+    items: ['Evaluación de alineación y mordida', 'Plan de tratamiento personalizado', 'Controles periódicos indicados'],
+  },
+];
+---
+<BaseLayout title="Servicios odontológicos en Punto Fijo" description="Conoce los servicios odontológicos de la Od. Albany Centeno en Punto Fijo: limpieza dental, extracción dental y ortodoncia. Agenda tu consulta." image="/og/servicios.png" schema={schema}>
+  <Breadcrumbs items={[{ name: 'Servicios', href: '/servicios/' }]} />
+  <section class="container-site py-8">
+    <p class="eyebrow">SERVICIOS</p>
+    <h1 class="mt-2 text-4xl md:text-5xl">Servicios odontológicos en Punto Fijo, Falcón</h1>
+    <p class="mt-4 max-w-3xl text-lg leading-relaxed text-secondary/90">La {SITE.doctorName} ofrece atención odontológica en {SITE.clinicName}, en Punto Fijo, Estado Falcón. Aquí encontrarás los tratamientos principales disponibles y podrás solicitar una cita según tu necesidad. Cada evaluación y plan de tratamiento se realiza de forma personalizada en consulta.</p>
+  </section>
+
+  <section class="container-site grid gap-8 py-8 md:grid-cols-2" aria-labelledby="presentacion-profesional">
+    <div class="card p-8">
+      <p class="eyebrow">PRESENTACIÓN PROFESIONAL</p>
+      <h2 id="presentacion-profesional" class="mt-2 text-3xl">{SITE.doctorName}</h2>
+      <p class="mt-3 text-secondary/90">Odontóloga con atención en Punto Fijo, Estado Falcón. Su enfoque se basa en el cuidado de la salud bucal, la orientación clara al paciente y la atención personalizada.</p>
+      <ul class="mt-4 space-y-2 text-secondary/90">
+        <li><strong>Especialidad:</strong> {SITE.specialty}</li>
+        <li><strong>Formación:</strong> {SITE.credentials.education.join(', ')}</li>
+        <li><strong>Experiencia:</strong> {SITE.credentials.experience}</li>
+        <li><strong>Registro profesional:</strong> {SITE.credentials.license}</li>
+      </ul>
+      <p class="mt-4 text-sm text-secondary/70">Datos de formación, experiencia y registro: verificables y pendientes de completar en la configuración del sitio.</p>
+      <a href="/sobre-mi/" class="btn-outline mt-5">Conoce más sobre mí</a>
+    </div>
+    <div class="card flex items-center justify-center bg-primary/10 p-8 text-center text-secondary/80">[PENDIENTE: fotografía real profesional de la Od. Albany Centeno — no usar stock]</div>
+  </section>
+
+  <section class="container-site py-12" aria-labelledby="tratamientos">
+    <h2 id="tratamientos" class="text-3xl md:text-4xl">Tratamientos y especialidades</h2>
+    <p class="mt-3 max-w-3xl text-secondary/90">Estos son los tratamientos principales disponibles en Punto Fijo, Estado Falcón. Cada página explica en qué consiste, para quién puede estar indicado y qué esperar, con preguntas frecuentes.</p>
+    <div class="mt-8 grid gap-6 md:grid-cols-3">
+      {SITE.treatments.map((t) => (
+        <article class="card flex flex-col p-6">
+          <h3 class="font-body text-2xl font-semibold">{t.name}</h3>
+          <p class="mt-2 flex-1 text-secondary/85">{t.short} en Punto Fijo, Estado Falcón.</p>
+          <a href={`/servicios/${t.slug}/`} class="btn-outline mt-6">Ver tratamiento</a>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="bg-surface py-12" aria-labelledby="beneficios-tratamientos">
+    <div class="container-site">
+      <h2 id="beneficios-tratamientos" class="text-3xl md:text-4xl">Beneficios de cada tratamiento</h2>
+      <div class="mt-6 grid gap-4 md:grid-cols-3">
+        {benefits.map((b) => (
+          <div class="card p-5">
+            <h3 class="font-body text-xl font-semibold">{b.name}</h3>
+            <ul class="mt-3 list-disc space-y-1 pl-5 text-sm text-secondary/90">{b.items.map((i) => <li>{i}</li>)}</ul>
+            <a href={`/servicios/${b.slug}/`} class="mt-4 inline-block text-sm underline decoration-primary underline-offset-2">Leer más</a>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="container-site py-12" aria-labelledby="porque-elegir">
+    <h2 id="porque-elegir" class="text-3xl md:text-4xl">¿Por qué elegir a la {SITE.doctorName}?</h2>
+    <div class="mt-6 grid gap-4 md:grid-cols-2">
+      {[
+        'Atención personalizada en cada etapa del tratamiento.',
+        'Orientación clara sobre el diagnóstico y las opciones disponibles.',
+        'Atención local en Punto Fijo para pacientes del Estado Falcón.',
+        'Enfoque en la prevención y el cuidado de la salud bucal.',
+      ].map((b) => <p class="card p-5 text-secondary/90">{b}</p>)}
+    </div>
+  </section>
+
+  <section class="bg-surface py-12" aria-labelledby="zonas-atendidas">
+    <div class="container-site max-w-3xl">
+      <h2 id="zonas-atendidas" class="text-3xl md:text-4xl">Atención en Punto Fijo y el Estado Falcón</h2>
+      <p class="mt-4 text-secondary/90">El consultorio se encuentra en Punto Fijo, Estado Falcón. Pacientes de la ciudad y de zonas cercanas pueden solicitar su cita y consultar la ubicación en el mapa antes de asistir.</p>
+      <p class="mt-2 text-secondary/90">Dirección: {SITE.address.full}. Teléfono/WhatsApp: <a class="underline" href={SITE.phone.tel}>{SITE.phone.display}</a>.</p>
+    </div>
+  </section>
+
+  <FAQ items={faqs} heading="Preguntas frecuentes sobre servicios" />
+
+  <section class="container-site py-12 text-center">
+    <h2 class="text-3xl">Solicita una consulta</h2>
+    <p class="mt-3 text-secondary/90">Agenda tu cita con la {SITE.doctorName} en Punto Fijo, Estado Falcón.</p>
+    <div class="mt-6 flex flex-wrap justify-center gap-4">
+      <a href="/agendar-cita/" class="btn-primary">Solicitar consulta</a>
+      <a href={`${SITE.phone.whatsapp}?text=${encodeURIComponent('Hola, quisiera solicitar una consulta.')}`} target="_blank" rel="noopener noreferrer" class="btn-outline">WhatsApp</a>
+    </div>
+  </section>
+  <p class="container-site pb-12 text-sm text-secondary/70">{SITE.medicalDisclaimer} Última revisión: {SITE.lastReviewed}.</p>
+</BaseLayout>

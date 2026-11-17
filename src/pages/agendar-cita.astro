@@ -1,0 +1,552 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import FAQ from '@/components/FAQ.astro';
+import { SITE } from '@/config/site';
+import { isBookingApiConfigured } from '@/lib/booking-api';
+import { getOrganizationSchema } from '@/components/SchemaOrg.astro';
+
+const schema = [getOrganizationSchema()];
+const wa = SITE.phone.whatsapp;
+const faqs = [
+  { question: '¿Cómo solicito una cita con la Od. Albany Centeno?', answer: 'Completa el formulario de esta página: selecciona la fecha, elige una hora disponible y envía tus datos. También puedes escribir por WhatsApp al +58 412-6400748 si prefieres confirmar por ese canal.' },
+  { question: '¿La cita queda confirmada al enviar el formulario?', answer: 'La solicitud se registra como cita pendiente. El consultorio verifica la disponibilidad y se comunica contigo para confirmar la cita.' },
+  { question: '¿Qué datos se solicitan?', answer: 'Nombre, apellido, tipo y número de documento, teléfono, correo electrónico opcional, tratamiento de interés, fecha y hora solicitada, y un mensaje opcional. No se solicitan datos clínicos en el formulario.' },
+  { question: '¿Necesito un documento de identidad para reservar?', answer: 'Sí. El sistema del consultorio usa el tipo y número de documento para identificar al paciente y evitar reservas duplicadas. Puedes indicar cédula de ciudadanía, cédula de extranjería, pasaporte u otro documento.' },
+  { question: '¿Cuál es el horario de atención?', answer: 'El horario semanal y las horas disponibles se muestran en esta página según la agenda del consultorio. Solo aparecen las franjas que están libres para la fecha seleccionada.' },
+  { question: '¿Dónde está ubicado el consultorio?', answer: 'En Centro Medico Luna Design, Calle Girardot con esquina de la Calle Nazaret (N° 25-262), Punto Fijo, Estado Falcón, Venezuela.' },
+];
+---
+<BaseLayout title="Agendar cita odontológica en Punto Fijo" description="Agenda tu cita con la Od. Albany Centeno en Punto Fijo, Estado Falcón. Consulta disponibilidad real, elige una hora libre y reserva en línea." image="/og/agendar-cita.png" schema={schema}>
+  <Breadcrumbs items={[{ name: 'Agendar cita', href: '/agendar-cita/' }]} />
+  <section class="container-site py-8">
+    <p class="eyebrow">AGENDA TU CITA</p>
+    <h1 class="mt-2 text-4xl md:text-5xl">Agendar cita en Punto Fijo, Estado Falcón</h1>
+    <p class="mt-4 max-w-3xl text-lg text-secondary/90">Solicita tu cita con la {SITE.doctorName} en {SITE.clinicName}. Consulta las horas disponibles, selecciona la que prefieras y envía tus datos; el consultorio confirmará la cita.</p>
+  </section>
+
+  <section class="container-site pb-4" aria-labelledby="como-agendar">
+    <h2 id="como-agendar" class="text-2xl md:text-3xl">Cómo agendar tu cita</h2>
+    <div class="mt-5 grid gap-4 md:grid-cols-3">
+      {[
+        { n: '1', t: 'Elige tratamiento y fecha', d: 'Selecciona limpieza dental, extracción dental, ortodoncia o consulta general, y luego la fecha.' },
+        { n: '2', t: 'Escoge una hora libre', d: 'El sistema muestra solo las horas disponibles. Completa tus datos y reserva.' },
+        { n: '3', t: 'Recibe la confirmación', d: 'La cita queda pendiente y el consultorio se comunica contigo para confirmarla.' },
+      ].map((step) => (
+        <div class="card p-5">
+          <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-sm font-semibold text-white">{step.n}</span>
+          <h3 class="mt-3 font-body text-lg font-semibold">{step.t}</h3>
+          <p class="mt-1 text-sm text-secondary/90">{step.d}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="container-site grid gap-8 py-6 lg:grid-cols-2" aria-labelledby="form-cita">
+    <div class="card p-6 md:p-8">
+      <h2 id="form-cita" class="text-2xl md:text-3xl">Solicitud de cita</h2>
+      <p class="mt-2 text-sm text-secondary/80">Reserva sujeta a disponibilidad. No se solicitan datos clínicos en este formulario.</p>
+
+      <form id="cita-form" class="mt-6 space-y-4" novalidate>
+        <div class="hidden" aria-hidden="true">
+          <label>Dejar vacío <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+        </div>
+        <div class="grid gap-4 sm:grid-cols-[0.9fr_1.1fr]">
+          <div>
+            <label for="documentType" class="block text-sm font-medium">Tipo de documento *</label>
+            <select id="documentType" name="documentType" required class="mt-1 w-full rounded-xl border border-border bg-white px-4 py-3">
+              <option value="cc">Cédula de ciudadanía</option>
+              <option value="ce">Cédula de extranjería</option>
+              <option value="passport">Pasaporte</option>
+              <option value="other">Otro documento</option>
+            </select>
+          </div>
+          <div>
+            <label for="documentNumber" class="block text-sm font-medium">Número de documento *</label>
+            <input id="documentNumber" name="documentNumber" required autocomplete="off" class="mt-1 w-full rounded-xl border border-border bg-white px-4 py-3" placeholder="V-12345678" />
+          </div>
+        </div>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label for="firstName" class="block text-sm font-medium">Nombre *</label>
+            <input id="firstName" name="firstName" required autocomplete="given-name" class="mt-1 w-full rounded-xl border border-border bg-white px-4 py-3" />
+          </div>
+          <div>
+            <label for="lastName" class="block text-sm font-medium">Apellido *</label>
+            <input id="lastName" name="lastName" required autocomplete="family-name" class="mt-1 w-full rounded-xl border border-border bg-white px-4 py-3" />
+          </div>
+        </div>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label for="telefono" class="block text-sm font-medium">Teléfono *</label>
+            <input id="telefono" name="phone" required autocomplete="tel" inputmode="tel" class="mt-1 w-full rounded-xl border border-border bg-white px-4 py-3" placeholder="+58 412..." />
+          </div>
+          <div>
+            <label for="email" class="block text-sm font-medium">Correo electrónico</label>
+            <input id="email" name="email" type="email" autocomplete="email" class="mt-1 w-full rounded-xl border border-border bg-white px-4 py-3" placeholder="opcional@correo.com" />
+          </div>
+        </div>
+        <div>
+          <label for="tratamiento" class="block text-sm font-medium">Tratamiento de interés *</label>
+          <select id="tratamiento" name="treatment" required class="mt-1 w-full rounded-xl border border-border bg-white px-4 py-3">
+            <option value="">Selecciona una opción</option>
+            {SITE.treatments.map(t => <option value={t.slug}>{t.name}</option>)}
+            <option value="consulta">Consulta general</option>
+          </select>
+        </div>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label for="fecha" class="block text-sm font-medium">Fecha *</label>
+            <input id="fecha" name="date" type="date" required class="mt-1 w-full rounded-xl border border-border bg-white px-4 py-3" />
+          </div>
+          <div>
+            <label for="startsAt" class="block text-sm font-medium">Hora disponible *</label>
+            <select id="startsAt" name="startsAt" required disabled class="mt-1 w-full rounded-xl border border-border bg-white px-4 py-3 disabled:bg-background disabled:text-secondary/60">
+              <option value="">Selecciona una fecha</option>
+            </select>
+          </div>
+        </div>
+        <p id="availability-status" class="text-xs text-secondary/70" role="status" aria-live="polite">Selecciona una fecha para consultar los horarios disponibles.</p>
+        <div>
+          <label for="mensaje" class="block text-sm font-medium">Mensaje</label>
+          <textarea id="mensaje" name="mensaje" rows="4" class="mt-1 w-full rounded-xl border border-border bg-white px-4 py-3" placeholder="Cuéntanos brevemente tu motivo de consulta (sin datos clínicos sensibles)."></textarea>
+        </div>
+        <div class="flex items-start gap-3">
+          <input id="consent" name="consent" type="checkbox" required class="mt-1 h-4 w-4 rounded border-border" />
+          <label for="consent" class="text-sm text-secondary/90">Acepto el tratamiento de mis datos para gestionar esta solicitud de cita y he leído la <a href="#privacidad" class="underline">política de privacidad</a>. *</label>
+        </div>
+        <p id="form-error" class="hidden text-sm text-red-700" role="alert"></p>
+        <button type="submit" class="btn-primary w-full" data-track="submit_cita_form">
+          <span id="submit-label">Enviar solicitud</span>
+        </button>
+      </form>
+
+      <div id="form-success" class="mt-4 hidden rounded-card border border-primary bg-background p-4 text-secondary" role="status">
+        <p id="form-success-title" class="font-semibold">Solicitud enviada.</p>
+        <p id="form-success-text" class="mt-1 text-sm">Tu cita quedó pendiente de confirmación. El consultorio te contactará para confirmar la disponibilidad.</p>
+        <p class="mt-2 text-sm">Si no recibes respuesta, contáctanos al <a class="underline" href={SITE.phone.tel}>{SITE.phone.display}</a>.</p>
+      </div>
+
+      <div id="privacidad" class="mt-8 border-t border-border pt-6 text-sm text-secondary/85">
+        <h3 class="font-body text-base font-semibold text-secondary">Política de privacidad (resumen)</h3>
+        <p class="mt-2">Los datos proporcionados (nombre, apellido, tipo y número de documento, teléfono, correo electrónico opcional, tratamiento de interés, fecha y hora solicitada, y mensaje) se registran en el sistema de gestión del consultorio para gestionar tu solicitud de cita con {SITE.clinicName}. No se solicitan datos clínicos por este medio. Puedes solicitar la actualización o eliminación de tus datos de contacto comunicándote al {SITE.phone.display}. [PENDIENTE: documento legal completo de privacidad y responsable del tratamiento según normativa aplicable].</p>
+      </div>
+    </div>
+
+    <div class="space-y-6">
+      <div class="card p-6">
+        <h2 class="text-2xl">Horarios de atención</h2>
+        <div id="schedule-list" class="mt-3 space-y-2 text-sm text-secondary/90">
+          {isBookingApiConfigured ? (
+            <p>Cargando horario desde la agenda del consultorio...</p>
+          ) : (
+            <>
+              <p><strong>Días:</strong> {SITE.hours.label}</p>
+              <p><strong>Horario:</strong> {SITE.hours.detail}</p>
+            </>
+          )}
+        </div>
+        <p id="schedule-status" class="mt-3 text-xs text-secondary/60" role="status" aria-live="polite">
+          {isBookingApiConfigured ? 'Consultando horario...' : 'Horario referencial; la disponibilidad se confirma al reservar.'}
+        </p>
+      </div>
+
+      <div class="card p-6">
+        <h2 class="text-2xl">Ubicación y cómo llegar</h2>
+        <p class="mt-2">{SITE.clinicName}</p>
+        <p class="text-secondary/90">{SITE.address.full}</p>
+        <p class="mt-2 text-sm text-secondary/80"><strong>Referencia:</strong> Calle Girardot con esquina de la Calle Nazaret (N° 25-262). Plus code: {SITE.geo.plusCode}.</p>
+        <div class="mt-4 overflow-hidden rounded-xl border border-border">
+          <iframe title="Mapa del consultorio en Punto Fijo" src={SITE.geo.mapsEmbedUrl} width="100%" height="260" loading="lazy" referrerpolicy="no-referrer-when-downgrade" class="border-0"></iframe>
+        </div>
+        <div class="mt-4 flex flex-wrap gap-3">
+          <a href={SITE.geo.mapsUrl} target="_blank" rel="noopener noreferrer" class="btn-outline" data-track="click_maps_agendar">Abrir en Google Maps</a>
+          <a href={SITE.phone.tel} class="btn-outline" data-track="click_call_agendar">Llamar</a>
+          <a href={`${wa}?text=${encodeURIComponent('Hola, quisiera agendar una cita.')}`} target="_blank" rel="noopener noreferrer" class="btn-outline" data-track="click_whatsapp_agendar">WhatsApp</a>
+        </div>
+      </div>
+
+      <div class="card p-6">
+        <h2 class="text-2xl">Opiniones verificadas</h2>
+        <p class="mt-2 text-secondary/80">[PENDIENTE: testimonios y opiniones verificadas con consentimiento documentado]</p>
+        {SITE.socials.googleReview?.startsWith('http') ? (
+          <a href={SITE.socials.googleReview} target="_blank" rel="noopener noreferrer" class="btn-outline mt-4">Déjanos tu reseña en Google</a>
+        ) : (
+          <p class="mt-3 text-sm text-secondary/70">Enlace reseña Google: {SITE.socials.googleReview}</p>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <FAQ items={faqs} heading="Preguntas frecuentes sobre citas" />
+  <p class="container-site pb-12 text-sm text-secondary/70">{SITE.medicalDisclaimer} Última revisión: {SITE.lastReviewed}.</p>
+</BaseLayout>
+
+<script>
+  import { SITE } from '@/config/site';
+  import { createAppointment, getAvailability, getSchedule, isBookingApiConfigured } from '@/lib/booking-api';
+  import type { AppointmentType, DocumentType } from '@/lib/booking-api';
+
+  const form = document.getElementById('cita-form') as HTMLFormElement | null;
+  const errorEl = document.getElementById('form-error');
+  const successEl = document.getElementById('form-success');
+  const successTitle = document.getElementById('form-success-title');
+  const successText = document.getElementById('form-success-text');
+  const dateInput = document.getElementById('fecha') as HTMLInputElement | null;
+  const startsAtSelect = document.getElementById('startsAt') as HTMLSelectElement | null;
+  const availabilityStatus = document.getElementById('availability-status');
+  const scheduleList = document.getElementById('schedule-list');
+  const scheduleStatus = document.getElementById('schedule-status');
+  const treatmentSelect = document.getElementById('tratamiento') as HTMLSelectElement | null;
+  const submitButton = form?.querySelector('button[type="submit"]') as HTMLButtonElement | null;
+  const submitLabel = document.getElementById('submit-label');
+
+  const wa = SITE.phone.whatsapp;
+  const mode = SITE.forms.mode;
+  const endpoint = SITE.forms.endpoint;
+  const formEmail = SITE.forms.email;
+  const defaultTimezone = 'America/Caracas';
+  const dayNames: Record<number, string> = {
+    1: 'Lunes',
+    2: 'Martes',
+    3: 'Miércoles',
+    4: 'Jueves',
+    5: 'Viernes',
+    6: 'Sábado',
+    7: 'Domingo',
+  };
+  const appointmentTypeByTreatment: Record<string, AppointmentType> = {
+    'limpieza-dental': 'limpieza',
+    'extraccion-dental': 'cirugia',
+    ortodoncia: 'ortodoncia',
+    consulta: 'consulta',
+  };
+  const legacyTreatmentNames: Record<string, string> = {
+    'Limpieza dental': 'limpieza-dental',
+    'Extracción dental': 'extraccion-dental',
+    Ortodoncia: 'ortodoncia',
+    'Consulta general': 'consulta',
+  };
+
+  let scheduleTimezone = defaultTimezone;
+  let availabilityRequest = 0;
+
+  const toLocalDate = (date: Date) => {
+    const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+    return local.toISOString().slice(0, 10);
+  };
+
+  if (dateInput) {
+    const today = new Date();
+    const max = new Date(today);
+    max.setDate(max.getDate() + 90);
+    dateInput.min = toLocalDate(today);
+    dateInput.max = toLocalDate(max);
+  }
+
+  const setAvailabilityStatus = (message: string, tone: 'normal' | 'error' = 'normal') => {
+    if (!availabilityStatus) return;
+    availabilityStatus.textContent = message;
+    availabilityStatus.className = `text-xs ${tone === 'error' ? 'text-red-700' : 'text-secondary/70'}`;
+  };
+
+  const resetStartsAt = (placeholder = 'Selecciona una fecha') => {
+    if (!startsAtSelect) return;
+    startsAtSelect.replaceChildren(new Option(placeholder, ''));
+    startsAtSelect.disabled = true;
+  };
+
+  const fillFallbackTimes = () => {
+    if (!startsAtSelect) return;
+    startsAtSelect.replaceChildren(
+      new Option('Selecciona una preferencia', ''),
+      new Option('Mañana', 'Mañana'),
+      new Option('Tarde', 'Tarde'),
+      new Option('Por definir', 'Por definir')
+    );
+    startsAtSelect.disabled = false;
+  };
+
+  const formatDateLabel = (date: string) => {
+    const parsed = new Date(`${date}T12:00:00`);
+    if (Number.isNaN(parsed.getTime())) return date;
+    return new Intl.DateTimeFormat('es-VE', { weekday: 'long', day: 'numeric', month: 'long' }).format(parsed);
+  };
+
+  const formatSlot = (value: string, timezone = scheduleTimezone) => {
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return value;
+    return new Intl.DateTimeFormat('es-VE', {
+      timeZone: timezone || defaultTimezone,
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    }).format(parsed);
+  };
+
+  const renderSchedule = (schedule: Awaited<ReturnType<typeof getSchedule>>) => {
+    if (!scheduleList) return;
+    if (!Array.isArray(schedule.days) || schedule.days.length === 0) {
+      scheduleList.replaceChildren();
+      const message = document.createElement('p');
+      message.textContent = 'No hay horario configurado en línea. Consulta por WhatsApp.';
+      scheduleList.append(message);
+      return;
+    }
+
+    const list = document.createElement('ul');
+    list.className = 'space-y-2';
+    for (const day of schedule.days) {
+      const item = document.createElement('li');
+      const label = document.createElement('strong');
+      label.textContent = `${dayNames[day.dayOfWeek] || 'Día'}: `;
+      const hours = day.ranges.map((range) => `${range.openTime}–${range.closeTime}`).join(' · ');
+      item.append(label, document.createTextNode(hours));
+      list.append(item);
+    }
+    scheduleList.replaceChildren(list);
+  };
+
+  const loadSchedule = async () => {
+    if (!isBookingApiConfigured || !scheduleList) return;
+    try {
+      const schedule = await getSchedule();
+      scheduleTimezone = schedule.timezone || defaultTimezone;
+      renderSchedule(schedule);
+      if (scheduleStatus) scheduleStatus.textContent = 'Horario actualizado desde la agenda del consultorio.';
+    } catch {
+      if (scheduleStatus) scheduleStatus.textContent = 'No se pudo cargar el horario en línea. Consulta por WhatsApp.';
+    }
+  };
+
+  const loadAvailability = async (date: string) => {
+    if (!startsAtSelect) return;
+    if (!isBookingApiConfigured) {
+      fillFallbackTimes();
+      setAvailabilityStatus('Indica tu preferencia de horario; el consultorio confirmará la disponibilidad.');
+      return;
+    }
+    if (!date) {
+      resetStartsAt();
+      setAvailabilityStatus('Selecciona una fecha para consultar los horarios disponibles.');
+      return;
+    }
+
+    const requestId = ++availabilityRequest;
+    startsAtSelect.disabled = true;
+    startsAtSelect.replaceChildren(new Option('Consultando disponibilidad...', ''));
+    setAvailabilityStatus('Consultando horarios disponibles...');
+
+    try {
+      const data = await getAvailability(date);
+      if (requestId !== availabilityRequest) return;
+      const slots = Array.isArray(data.slots) ? data.slots : [];
+      if (slots.length === 0) {
+        startsAtSelect.replaceChildren(new Option('Sin horas disponibles', ''));
+        setAvailabilityStatus('No hay horas disponibles para esa fecha. Prueba con otro día.');
+        return;
+      }
+
+      startsAtSelect.replaceChildren(new Option('Selecciona una hora', ''));
+      const formatter = new Intl.DateTimeFormat('es-VE', {
+        timeZone: data.timezone || scheduleTimezone || defaultTimezone,
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      });
+      for (const slot of slots) {
+        const parsed = new Date(slot);
+        startsAtSelect.append(new Option(Number.isNaN(parsed.getTime()) ? slot : formatter.format(parsed), slot));
+      }
+      startsAtSelect.disabled = false;
+      setAvailabilityStatus(`${slots.length} ${slots.length === 1 ? 'hora disponible' : 'horas disponibles'} para ${formatDateLabel(date)}.`);
+    } catch (error) {
+      if (requestId !== availabilityRequest) return;
+      startsAtSelect.replaceChildren(new Option('Disponibilidad no disponible', ''));
+      setAvailabilityStatus(error instanceof Error ? error.message : 'No se pudo consultar la disponibilidad.', 'error');
+    }
+  };
+
+  const showError = (message: string) => {
+    if (!errorEl) return;
+    errorEl.textContent = message;
+    errorEl.classList.remove('hidden');
+  };
+  const clearError = () => errorEl?.classList.add('hidden');
+  const showSuccess = (title: string, message: string) => {
+    if (successTitle) successTitle.textContent = title;
+    if (successText) successText.textContent = message;
+    successEl?.classList.remove('hidden');
+    successEl?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+  const setLoading = (loading: boolean) => {
+    if (submitButton) submitButton.disabled = loading;
+    if (submitLabel) submitLabel.textContent = loading ? 'Procesando...' : 'Enviar solicitud';
+  };
+
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    clearError();
+    successEl?.classList.add('hidden');
+
+    const fd = new FormData(form);
+    if (fd.get('website')) return; // honeypot
+    const documentType = String(fd.get('documentType') || 'cc') as DocumentType;
+    const documentNumber = String(fd.get('documentNumber') || '').trim();
+    const firstName = String(fd.get('firstName') || '').trim();
+    const lastName = String(fd.get('lastName') || '').trim();
+    const phone = String(fd.get('phone') || '').trim();
+    const email = String(fd.get('email') || '').trim();
+    const treatment = String(fd.get('treatment') || '').trim();
+    const date = String(fd.get('date') || '');
+    const startsAt = String(fd.get('startsAt') || '');
+    const message = String(fd.get('mensaje') || '').trim();
+    const consent = fd.get('consent');
+
+    if (!documentNumber || !firstName || !lastName || !phone || !treatment || !date || !consent) {
+      showError('Por favor completa los campos obligatorios y acepta la política de privacidad.');
+      return;
+    }
+    if (documentNumber.length < 3) {
+      showError('Ingresa un número de documento válido.');
+      return;
+    }
+    if (phone.replace(/\D/g, '').length < 7) {
+      showError('Ingresa un teléfono válido para poder contactarte.');
+      return;
+    }
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showError('Ingresa un correo electrónico válido o déjalo vacío.');
+      return;
+    }
+    if (isBookingApiConfigured && (!startsAt || !startsAt.includes('T'))) {
+      showError('Selecciona una hora disponible para la fecha indicada.');
+      return;
+    }
+
+    const treatmentLabel = treatmentSelect?.selectedOptions[0]?.textContent?.trim() || treatment;
+    const appointmentType = appointmentTypeByTreatment[treatment] || 'consulta';
+    const trackingMode = isBookingApiConfigured ? 'api' : mode;
+    window.trackEvent?.('submit_form_cita', { treatment, mode: trackingMode });
+    window.trackEvent?.('generate_lead', { form: 'cita', treatment, mode: trackingMode });
+
+    setLoading(true);
+    try {
+      if (isBookingApiConfigured) {
+        try {
+          const appointment = await createAppointment({
+            documentType,
+            documentNumber,
+            firstName,
+            lastName,
+            phone,
+            email: email || undefined,
+            startsAt,
+            appointmentType,
+          });
+          window.trackEvent?.('form_cita_enviado', { mode: 'api', appointmentType, status: appointment.status });
+          showSuccess(
+            'Solicitud enviada.',
+            `Tu cita quedó pendiente de confirmación para ${formatSlot(appointment.startsAt)}. El consultorio te contactará para confirmarla.`
+          );
+          form.reset();
+          resetStartsAt();
+          setAvailabilityStatus('Selecciona una fecha para consultar los horarios disponibles.');
+          return;
+        } catch (error) {
+          const status = (error as { status?: number }).status ?? 0;
+          window.trackEvent?.('form_cita_error', { mode: 'api', appointmentType, status });
+          showError(error instanceof Error ? error.message : 'No se pudo enviar la solicitud. Intenta de nuevo.');
+          if (status === 409 && date) void loadAvailability(date);
+          return;
+        }
+      }
+
+      const text = `Hola, soy ${firstName} ${lastName}. Quisiera agendar una cita para ${treatmentLabel}. Documento: ${documentType.toUpperCase()}-${documentNumber}. Teléfono: ${phone}. Fecha: ${date || 'por definir'}. Hora: ${startsAt || 'por definir'}. Correo: ${email || 'N/A'}. Mensaje: ${message || 'N/A'}`;
+
+      if ((mode === 'endpoint' || mode === 'google-sheets') && endpoint) {
+        try {
+          const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({
+              documentType,
+              documentNumber,
+              firstName,
+              lastName,
+              phone,
+              email,
+              startsAt: startsAt || date,
+              appointmentType,
+              date,
+              treatment,
+              message,
+              consent: true,
+              origin: 'sitio-web',
+              page: window.location.href,
+            }),
+          });
+          if (!response.ok) throw new Error('fail');
+          window.trackEvent?.('form_cita_enviado', { mode });
+          showSuccess('Solicitud enviada.', 'El consultorio te contactará para confirmar la disponibilidad de tu cita.');
+          form.reset();
+          resetStartsAt();
+          return;
+        } catch {
+          window.trackEvent?.('form_cita_error', { mode });
+        }
+      }
+
+      if (mode === 'mailto' && formEmail && !formEmail.includes('PENDIENTE')) {
+        window.location.href = `mailto:${formEmail}?subject=${encodeURIComponent(`Solicitud de cita - ${treatmentLabel}`)}&body=${encodeURIComponent(text)}`;
+        showSuccess('Correo preparado.', 'Se abrirá tu correo para completar el envío de la solicitud.');
+        form.reset();
+        resetStartsAt();
+        return;
+      }
+
+      const waUrl = `${wa}?text=${encodeURIComponent(text)}`;
+      const opened = window.open(waUrl, '_blank');
+      if (opened) opened.opener = null;
+      else window.location.href = waUrl;
+      showSuccess(
+        'Solicitud preparada.',
+        mode === 'endpoint' || mode === 'google-sheets'
+          ? 'No pudimos enviar el formulario. Completa tu solicitud en WhatsApp.'
+          : 'Completa el envío en WhatsApp para que el consultorio reciba tus datos.'
+      );
+      form.reset();
+      resetStartsAt();
+    } finally {
+      setLoading(false);
+    }
+  });
+
+  dateInput?.addEventListener('change', () => {
+    void loadAvailability(dateInput.value);
+  });
+
+  const params = new URLSearchParams(window.location.search);
+  const requestedTreatment = params.get('tratamiento');
+  const prefill = requestedTreatment ? legacyTreatmentNames[requestedTreatment] || requestedTreatment : '';
+  if (prefill && treatmentSelect) {
+    const match = Array.from(treatmentSelect.options).some((option) => option.value === prefill);
+    if (match) {
+      treatmentSelect.value = prefill;
+      document.getElementById('form-cita')?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
+  if (isBookingApiConfigured) {
+    resetStartsAt();
+    setAvailabilityStatus('Selecciona una fecha para consultar los horarios disponibles.');
+    void loadSchedule();
+  } else {
+    fillFallbackTimes();
+    setAvailabilityStatus('Indica tu preferencia de horario; el consultorio confirmará la disponibilidad.');
+    if (scheduleStatus) scheduleStatus.textContent = 'Horario referencial. La disponibilidad se confirma al reservar.';
+  }
+</script>
